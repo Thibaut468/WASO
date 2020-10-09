@@ -140,12 +140,57 @@ public class AjaxAction {
 
     void rechercherClientParDenomination(String denomination, String ville) throws ServiceException {
         
-        // ...
+        try {
+            JsonObject smaResultContainer = null;
+            try {
+                    smaResultContainer = this.jsonHttpClient.post(
+                        this.smaUrl,
+                        new JsonHttpClient.Parameter("SMA", "rechercherClientParDenomination"),
+                        new JsonHttpClient.Parameter("denomination", denomination),
+                        new JsonHttpClient.Parameter("ville", ville)
+                    ); 
+            }
+            catch (ServiceIOException ex) {
+                throw JsonServletHelper.ServiceMetierCallException(this.smaUrl, "rechercherClientParDenomination", ex);
+            }
+
+            if (smaResultContainer.has("clients")) {
+            
+                JsonArray jsonListe = transformListeClient(smaResultContainer.getAsJsonArray("clients"));
+
+                this.container.add("clients", jsonListe);
+            }
+
+        } catch (IOException ex) {
+            throw JsonServletHelper.ActionExecutionException("rechercherClientParDenomination", ex);
+        }
     }
 
     void rechercherClientParNomPersonne(String nomPersonne, String ville) throws ServiceException {
-        
-        // ...
+        try {
+            JsonObject smaResultContainer = null;
+            try {
+                    smaResultContainer = this.jsonHttpClient.post(
+                        this.smaUrl,
+                        new JsonHttpClient.Parameter("SMA", "rechercherClientParNomPersonne"),
+                        new JsonHttpClient.Parameter("nom-personne", nomPersonne),
+                        new JsonHttpClient.Parameter("ville", ville)
+                    ); 
+            }
+            catch (ServiceIOException ex) {
+                throw JsonServletHelper.ServiceMetierCallException(this.smaUrl, "rechercherClientParNomPersonne", ex);
+            }
+
+            if (smaResultContainer.has("clients")) {
+            
+                JsonArray jsonListe = transformListeClient(smaResultContainer.getAsJsonArray("clients"));
+
+                this.container.add("clients", jsonListe);
+            }
+
+        } catch (IOException ex) {
+            throw JsonServletHelper.ActionExecutionException("rechercherClientParNomPersonne", ex);
+        }
     }
 
 }

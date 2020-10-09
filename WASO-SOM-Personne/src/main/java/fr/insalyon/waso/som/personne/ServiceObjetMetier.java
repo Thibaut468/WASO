@@ -68,5 +68,22 @@ public class ServiceObjetMetier {
             throw JsonServletHelper.ServiceObjectMetierExecutionException("Personne", "getPersonneParId", ex);
         }
     }
+    
+    public void rechercherPersonneParNom(String nom) throws ServiceException {
+        try {
+            List<Object[]> listePersonne = this.dBConnection.launchQuery("SELECT PersonneID FROM PERSONNE WHERE Nom LIKE '%"+nom+"%' ORDER BY PersonneID");
+
+            JsonArray jsonListe = new JsonArray();
+
+            for (Object[] row : listePersonne) {
+                jsonListe.add((Integer)row[0]);
+            }
+
+            this.container.add("personnes-ID", jsonListe);
+
+        } catch (DBException ex) {
+            throw JsonServletHelper.ServiceObjectMetierExecutionException("Personne", "rechercherPersonneParNom", ex);
+        }
+    }
 
 }

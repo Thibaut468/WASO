@@ -72,7 +72,7 @@ public class ServiceObjetMetierServlet extends HttpServlet {
                 }
                 Integer numero = Integer.parseInt(numeroParametre);
 
-                // service.rechercherClientParNumero(numero);
+                service.rechercherClientParNumero(numero);
 
             } else if ("rechercherClientParDenomination".equals(som)) {
 
@@ -86,7 +86,13 @@ public class ServiceObjetMetierServlet extends HttpServlet {
 
             } else if ("rechercherClientParPersonne".equals(som)) {
 
-                // service.rechercherClientParPersonne(personneIds, ville);
+                String idPersonne = request.getParameter("id-personne");
+                if (idPersonne == null) {
+                    throw new ServiceException("Paramètres incomplets");
+                }
+                String ville = request.getParameter("ville"); // paramètre facultatif
+                
+                service.rechercherClientParPersonne(Integer.parseInt(idPersonne), ville);
 
             } else {
 

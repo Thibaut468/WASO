@@ -69,7 +69,7 @@ public class ServiceMetierServlet extends HttpServlet {
                 }
                 Integer numero = Integer.parseInt(numeroParametre);
                 
-                // service.rechercherClientParNumero(numero);
+                service.rechercherClientParNumero(numero);
 
             } else if ("rechercherClientParDenomination".equals(sma)) {
                 
@@ -83,8 +83,12 @@ public class ServiceMetierServlet extends HttpServlet {
                
 
             } else if ("rechercherClientParNomPersonne".equals(sma)) {
-                
-                // service.rechercherClientParNomPersonne(nomPersonne,ville);
+                String nomPersonne = request.getParameter("nom-personne");
+                if (nomPersonne == null) {
+                    throw new ServiceException("Paramètres incomplets");
+                }
+                String ville = request.getParameter("ville"); // paramètre facultatif
+                service.rechercherClientParNomPersonne(nomPersonne,ville);
 
             } else {
 
