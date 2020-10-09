@@ -76,7 +76,13 @@ public class ServiceObjetMetierServlet extends HttpServlet {
 
             } else if ("rechercherClientParDenomination".equals(som)) {
 
-                // service.rechercherClientParDenomination(denomination, ville);
+                String denominationParametre = request.getParameter("denomination");
+                if (denominationParametre == null) {
+                    throw new ServiceException("Paramètres incomplets");
+                }
+                String villeParametre = request.getParameter("ville"); // paramètre facultatif
+                
+                service.rechercherClientParDenomination(denominationParametre, villeParametre);
 
             } else if ("rechercherClientParPersonne".equals(som)) {
 
