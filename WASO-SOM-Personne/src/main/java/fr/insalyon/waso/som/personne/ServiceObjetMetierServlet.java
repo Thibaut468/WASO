@@ -61,7 +61,7 @@ public class ServiceObjetMetierServlet extends HttpServlet {
             boolean serviceCalled = true;
 
             if ("getListePersonne".equals(som)) {
-
+               
                 service.getListePersonne();
 
             } else if ("getPersonneParId".equals(som)) {
@@ -71,8 +71,8 @@ public class ServiceObjetMetierServlet extends HttpServlet {
                     throw new ServiceException("Paramètres incomplets");
                 }
                 Integer idPersonne = Integer.parseInt(idPersonneParametre);
-
-                // service.getPersonneParId(idPersonne);
+                
+                service.getPersonneParId(idPersonne);
 
             } else if ("rechercherPersonneParNom".equals(som)) {
 
