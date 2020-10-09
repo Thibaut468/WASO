@@ -120,4 +120,84 @@ public class ServiceMetier {
         }
     }
 
+    public void rechercherClientParDenomination(String denomination, String ville) throws ServiceException {
+        try {
+
+            // 1. Obtenir la liste des Clients
+            
+            JsonObject clientContainer = null;
+            try {
+                clientContainer = this.jsonHttpClient.post(
+                        this.somClientUrl,
+                        new JsonHttpClient.Parameter("SOM", "rechercherClientParDenomination"),
+                        new JsonHttpClient.Parameter("denomination", denomination),
+                        new JsonHttpClient.Parameter("ville", ville)
+                );
+            }
+            catch (ServiceIOException ex) {
+                throw JsonServletHelper.ServiceObjectMetierCallException(this.somClientUrl, "Client", "rechercherClientParDenomination", ex);
+            }
+
+            JsonArray jsonOutputClientListe = clientContainer.getAsJsonArray("clients");
+            
+            HashMap<Integer, JsonObject> personnes = new HashMap<Integer, JsonObject>();
+            
+            for (JsonElement c : jsonOutputClientListe){
+                JsonObject client = c.getAsJsonObject();
+                JsonArray listePersonneId = client.get("personnes-ID").getAsJsonArray();
+                
+                for(JsonElement personne_id : listePersonneId){
+                    // 2. Obtenir la liste des Personnes depuis les clients
+            
+                    JsonObject personneContainer = null;
+                    try {
+                        personneContainer = this.jsonHttpClient.post(
+                                this.somPersonneUrl,
+                                new JsonHttpClient.Parameter("SOM", "getPersonneParId"),
+                                new JsonHttpClient.Parameter("id-personne",personne_id.getAsString())
+                        );
+                    }
+                    catch (ServiceIOException ex) {
+                        throw JsonServletHelper.ServiceObjectMetierCallException(this.somPersonneUrl, "Personne", "getPersonneParId", ex);
+                    }
+
+                    System.out.println(personneContainer);
+                    // 3. Indexer la personne à la liste
+                    
+                    JsonElement p = personneContainer.getAsJsonObject("personne");
+                    JsonObject personne = p.getAsJsonObject();
+                    personnes.put(personne.get("id").getAsInt(), personne);
+
+                 
+                }
+            }
+            
+            // 4. Construire la liste des Personnes pour chaque Client (directement dans le JSON)
+
+            for (JsonElement clientJsonElement : jsonOutputClientListe.getAsJsonArray()) {
+
+                JsonObject client = clientJsonElement.getAsJsonObject();
+
+                JsonArray personnesID = client.get("personnes-ID").getAsJsonArray();
+
+                JsonArray outputPersonnes = new JsonArray();
+
+                for (JsonElement personneID : personnesID) {
+                    JsonObject personne = personnes.get(personneID.getAsInt());
+                    outputPersonnes.add(personne);
+                }
+
+                client.add("personnes", outputPersonnes);
+
+            }
+
+
+            // 5. Ajouter la liste de Clients au conteneur JSON
+
+            this.container.add("clients", jsonOutputClientListe);
+
+        } catch (Exception ex) {
+            throw JsonServletHelper.ServiceMetierExecutionException("rechercherClientParDenomination", ex);
+        }
+    } 
 }
